@@ -10,6 +10,8 @@ let pgPool = null;
 const isPostgres = Boolean(
   process.env.DATABASE_URL ||
   process.env.SUPABASE_DB_URL ||
+  (process.env.DB_HOST && process.env.DB_HOST.includes('supabase')) ||
+  parseInt(process.env.DB_PORT) === 5432 ||
   (process.env.DB_CLIENT && process.env.DB_CLIENT.toLowerCase() === 'pg')
 );
 
@@ -107,10 +109,21 @@ async function initializeDatabase() {
     const connectionString = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
     console.log('[DB] Connecting to Supabase / PostgreSQL database...');
 
-    pgPool = new Pool({
-      connectionString,
-      ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
-    });
+    const poolConfig = connectionString
+      ? {
+          connectionString,
+          ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
+        }
+      : {
+          host: process.env.DB_HOST || 'db.vidwfvsxrpozcxliorpb.supabase.co',
+          port: parseInt(process.env.DB_PORT) || 5432,
+          user: process.env.DB_USER || 'postgres',
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME || 'postgres',
+          ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false },
+        };
+
+    pgPool = new Pool(poolConfig);
 
     try {
       const testRes = await pgPool.query('SELECT NOW()');
