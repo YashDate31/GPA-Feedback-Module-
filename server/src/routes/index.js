@@ -25,7 +25,12 @@ function requireAuth(req, res, next) {
 }
 
 // ── Public Routes ─────────────────────────────────────────────
-router.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
+router.get('/health', (req, res) => res.json({
+  status: 'ok',
+  uptime: Math.floor(process.uptime()),
+  timestamp: new Date().toISOString(),
+  service: 'gpa-feedback-module-server'
+}));
 router.post('/auth/login', auth.login);
 router.get('/departments', meta.getDepartments);
 router.get('/academic-years', meta.getAcademicYears);
