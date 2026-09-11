@@ -68,7 +68,7 @@ async function getSessionReport(req, res) {
        LEFT JOIN feedback_scores sc ON sc.allocation_id = fa.id
        LEFT JOIN feedback_submissions fs_sub ON sc.submission_id = fs_sub.id
        WHERE fa.session_id = ?
-       GROUP BY fa.id
+       GROUP BY fa.id, fa.allocation_type, fa.batch, f.name, f.designation, s.name, s.code, s.id
        ORDER BY s.id, fa.allocation_type, fa.batch`, [id]
     );
 
@@ -139,41 +139,43 @@ async function downloadSessionExcel(req, res) {
 
     // Sheet 1: Faculty Summary
     const facultySummary = await db.query(
-      `SELECT f.name as 'Faculty Name', f.designation as 'Designation',
-              s.name as 'Subject', s.code as 'Code', fa.allocation_type as 'Type', fa.batch as 'Batch',
-              COUNT(DISTINCT fs_sub.id) as 'No. of Evaluations',
-              ROUND(AVG(sc.p1_coverage_syllabus),2) as 'P1', ROUND(AVG(sc.p2_topics_beyond),2) as 'P2',
-              ROUND(AVG(sc.p3_technical_content),2) as 'P3', ROUND(AVG(sc.p4_communication),2) as 'P4',
-              ROUND(AVG(sc.p5_teaching_aids),2) as 'P5', ROUND(AVG(sc.p6_motivation),2) as 'P6',
-              ROUND(AVG(sc.p7_practical_skills),2) as 'P7', ROUND(AVG(sc.p8_project_skills),2) as 'P8',
-              ROUND(AVG(sc.p9_student_progress),2) as 'P9', ROUND(AVG(sc.p10_punctuality),2) as 'P10',
-              ROUND(AVG(sc.p11_domain_knowledge),2) as 'P11', ROUND(AVG(sc.p12_interaction),2) as 'P12',
-              ROUND(AVG(sc.p13_resolve_difficulties),2) as 'P13', ROUND(AVG(sc.p14_cocurricular),2) as 'P14',
-              ROUND(AVG(sc.p15_extracurricular),2) as 'P15', ROUND(AVG(sc.p16_internship),2) as 'P16',
-              ROUND(AVG(sc.marks_out_of_25),2) as 'Score /25'
+      `SELECT f.name as "Faculty Name", f.designation as "Designation",
+              s.name as "Subject", s.code as "Code", fa.allocation_type as "Type", fa.batch as "Batch",
+              COUNT(DISTINCT fs_sub.id) as "No. of Evaluations",
+              ROUND(AVG(sc.p1_coverage_syllabus),2) as "P1", ROUND(AVG(sc.p2_topics_beyond),2) as "P2",
+              ROUND(AVG(sc.p3_technical_content),2) as "P3", ROUND(AVG(sc.p4_communication),2) as "P4",
+              ROUND(AVG(sc.p5_teaching_aids),2) as "P5", ROUND(AVG(sc.p6_motivation),2) as "P6",
+              ROUND(AVG(sc.p7_practical_skills),2) as "P7", ROUND(AVG(sc.p8_project_skills),2) as "P8",
+              ROUND(AVG(sc.p9_student_progress),2) as "P9", ROUND(AVG(sc.p10_punctuality),2) as "P10",
+              ROUND(AVG(sc.p11_domain_knowledge),2) as "P11", ROUND(AVG(sc.p12_interaction),2) as "P12",
+              ROUND(AVG(sc.p13_resolve_difficulties),2) as "P13", ROUND(AVG(sc.p14_cocurricular),2) as "P14",
+              ROUND(AVG(sc.p15_extracurricular),2) as "P15", ROUND(AVG(sc.p16_internship),2) as "P16",
+              ROUND(AVG(sc.marks_out_of_25),2) as "Score /25"
        FROM faculty_allocations fa
        JOIN faculties f ON fa.faculty_id = f.id JOIN subjects s ON fa.subject_id = s.id
        LEFT JOIN feedback_scores sc ON sc.allocation_id = fa.id
        LEFT JOIN feedback_submissions fs_sub ON sc.submission_id = fs_sub.id
-       WHERE fa.session_id = ? GROUP BY fa.id ORDER BY s.id`, [id]
+       WHERE fa.session_id = ?
+       GROUP BY fa.id, f.name, f.designation, s.name, s.code, fa.allocation_type, fa.batch, s.id
+       ORDER BY s.id`, [id]
     );
 
     // Sheet 2: Student-wise raw data
     const rawData = await db.query(
-      `SELECT fs.enrollment_no as 'Enrollment No', fs.student_name as 'Student Name',
-              fs.batch as 'Batch', fs.submitted_at as 'Submitted At',
-              sub.name as 'Subject', sub.code as 'Subject Code',
-              fa.allocation_type as 'Type', fa.batch as 'Faculty Batch',
-              f.name as 'Faculty Name',
-              sc.p1_coverage_syllabus as 'P1', sc.p2_topics_beyond as 'P2',
-              sc.p3_technical_content as 'P3', sc.p4_communication as 'P4',
-              sc.p5_teaching_aids as 'P5', sc.p6_motivation as 'P6',
-              sc.p7_practical_skills as 'P7', sc.p8_project_skills as 'P8',
-              sc.p9_student_progress as 'P9', sc.p10_punctuality as 'P10',
-              sc.p11_domain_knowledge as 'P11', sc.p12_interaction as 'P12',
-              sc.p13_resolve_difficulties as 'P13', sc.p14_cocurricular as 'P14',
-              sc.p15_extracurricular as 'P15', sc.p16_internship as 'P16',
-              sc.total_raw as 'Total Raw', sc.marks_out_of_25 as 'Marks /25'
+      `SELECT fs.enrollment_no as "Enrollment No", fs.student_name as "Student Name",
+              fs.batch as "Batch", fs.submitted_at as "Submitted At",
+              sub.name as "Subject", sub.code as "Subject Code",
+              fa.allocation_type as "Type", fa.batch as "Faculty Batch",
+              f.name as "Faculty Name",
+              sc.p1_coverage_syllabus as "P1", sc.p2_topics_beyond as "P2",
+              sc.p3_technical_content as "P3", sc.p4_communication as "P4",
+              sc.p5_teaching_aids as "P5", sc.p6_motivation as "P6",
+              sc.p7_practical_skills as "P7", sc.p8_project_skills as "P8",
+              sc.p9_student_progress as "P9", sc.p10_punctuality as "P10",
+              sc.p11_domain_knowledge as "P11", sc.p12_interaction as "P12",
+              sc.p13_resolve_difficulties as "P13", sc.p14_cocurricular as "P14",
+              sc.p15_extracurricular as "P15", sc.p16_internship as "P16",
+              sc.total_raw as "Total Raw", sc.marks_out_of_25 as "Marks /25"
        FROM feedback_submissions fs
        JOIN feedback_scores sc ON sc.submission_id = fs.id
        JOIN faculty_allocations fa ON sc.allocation_id = fa.id
