@@ -24,7 +24,7 @@ export default function LandingPage() {
               <Info size={14} /> <span>About Developer</span>
             </button>
             <button className="landing-nav-btn primary" onClick={() => navigate('/login')}>
-              <Lock size={14} /> <span>Login</span>
+              <Lock size={14} /> <span>Teacher Login</span>
             </button>
           </div>
         </div>
