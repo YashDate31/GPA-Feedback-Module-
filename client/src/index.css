@@ -112,199 +112,25 @@ input, select, textarea { font-family: inherit; }
 }
 
 /* ═══════════════════════════════════════════════
-   PORTAL FOOTER (STRUCTURED INSTITUTIONAL DESIGN)
+   BASIC LANDING FOOTER
 ═══════════════════════════════════════════════ */
-.portal-footer {
+.landing-footer {
   background: #ffffff;
   border-top: 1px solid var(--gray-200);
+  padding: 24px 16px;
+  text-align: center;
   margin-top: auto;
 }
-.portal-footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 48px 24px 36px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
-  gap: 40px;
-}
-.pf-col {
-  display: flex;
-  flex-direction: column;
-}
-.pf-logo-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.pf-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1.5px solid var(--gray-200);
-  padding: 2px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.pf-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.pf-inst-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--gray-900);
-  line-height: 1.25;
-}
-.pf-inst-sub {
-  font-size: 11px;
-  color: var(--gray-400);
-  margin-top: 2px;
-}
-.pf-desc {
-  font-size: 13px;
-  color: var(--gray-600);
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
-.pf-motto {
-  font-size: 12px;
-  color: var(--primary-700);
-  background: var(--primary-50);
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--primary-100);
-  display: inline-block;
-  align-self: flex-start;
-}
-.pf-heading {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--gray-900);
-  margin-bottom: 16px;
-}
-.pf-links {
-  list-style: none;
-  padding: 0;
+.landing-footer p {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.pf-links button {
-  background: none;
-  border: none;
-  padding: 0;
   font-size: 13px;
   color: var(--gray-600);
-  cursor: pointer;
-  text-align: left;
-  transition: color 0.15s ease;
+  font-weight: 500;
 }
-.pf-links button:hover {
-  color: var(--primary-600);
-  text-decoration: underline;
-}
-.pf-dev-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #f8fafc;
-  border: 1px solid var(--gray-200);
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-.pf-dev-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #0f172a;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-.pf-dev-name {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--gray-900);
-}
-.pf-dev-role {
-  font-size: 11px;
-  color: var(--gray-500);
-}
-.pf-dev-meta {
-  font-size: 11.5px;
-  color: var(--gray-600);
-  margin-top: 2px;
-}
-.pf-dev-meta code {
-  background: #e2e8f0;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-weight: 700;
-  color: var(--primary-700);
-}
-.pf-social-strip {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.pf-social-pill {
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #334155;
-  text-decoration: none;
-  transition: all 0.15s ease;
-}
-.pf-social-pill:hover {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-.portal-footer-bottom {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 16px 24px;
-  border-top: 1px solid var(--gray-100);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--gray-500);
-}
-.pf-bottom-sub {
-  font-size: 11px;
-  color: var(--gray-400);
-}
-
-@media (max-width: 768px) {
-  .portal-footer-inner {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    padding: 32px 16px 24px;
-  }
-  .portal-footer-bottom {
-    flex-direction: column;
-    text-align: center;
-    gap: 4px;
-  }
+.landing-footer-sub {
+  font-size: 12px !important;
+  color: var(--gray-400) !important;
+  margin-top: 4px !important;
 }
 
 
