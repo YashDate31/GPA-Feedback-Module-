@@ -39,9 +39,31 @@ export default function TeacherReports() {
 
   const handleSessionChange = (id) => { setSelectedSession(id); loadReport(id); };
 
-  const handleDownloadExcel = () => {
+  const handleDownloadExcel = async () => {
     if (!selectedSession) { toast.error('Select a session first'); return; }
-    window.open(`${API.defaults.baseURL}/reports/download/session/${selectedSession}`, '_blank');
+    try {
+      toast.loading('Generating formatted Excel report...', { id: 'download-excel' });
+      const res = await API.get(`/reports/download/session/${selectedSession}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([res.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeTitle = (report?.session?.title || 'Session').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `Feedback_${report?.session?.dept_name || 'CO'}_Sem${report?.session?.semester || ''}_${safeTitle}.xlsx`;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Excel report downloaded successfully!', { id: 'download-excel' });
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to download Excel report', { id: 'download-excel' });
+    }
   };
 
   const handlePrint = () => window.print();
