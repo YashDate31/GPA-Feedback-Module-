@@ -103,6 +103,17 @@ async function submitFeedback(req, res) {
     );
     const submissionId = subResult.insertId;
 
+    const isSem5or6 = [5, 6, '5', '6'].includes(session.semester);
+    if (isSem5or6) {
+      for (const [allocIdStr, paramScores] of Object.entries(scores)) {
+        const p16 = parseInt(paramScores?.p16_internship);
+        if (!p16 || p16 < 1 || p16 > 5) {
+          await conn.rollback();
+          return res.status(400).json({ error: 'Parameter 16 (Guidance during Internship) is compulsory for Semester ' + session.semester });
+        }
+      }
+    }
+
     // Insert scores for each allocation
     for (const [allocIdStr, paramScores] of Object.entries(scores)) {
       const allocId = parseInt(allocIdStr);

@@ -58,7 +58,8 @@ function MsbteReport({ data }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
             <span>Name of the Faculty: <strong>{f.faculty_name}</strong></span>
             <span>Subject: <strong>{f.subject_name} ({f.subject_code})</strong></span>
-            {f.batch !== 'ALL' && <span>Batch: <strong>{f.batch}</strong></span>}
+            <span>Type: <strong>{f.allocation_type}</strong></span>
+            {f.batch && f.batch !== 'ALL' && <span>Batch: <strong>{f.batch}</strong></span>}
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
             <thead>

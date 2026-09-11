@@ -49,29 +49,38 @@ async function getSessionReport(req, res) {
     );
     const submissions_count = total_submissions[0].cnt;
 
-    // Faculty-wise aggregated results
+    // Faculty-wise aggregated results (combined theory & practical per subject)
     const faculty_reports = await db.query(
-      `SELECT fa.id as allocation_id, fa.allocation_type, fa.batch,
+      `SELECT f.id as faculty_id, s.id as subject_id,
               f.name as faculty_name, f.designation,
               s.name as subject_name, s.code as subject_code,
+              CASE 
+                WHEN COUNT(DISTINCT fa.allocation_type) > 1 THEN 'THEORY & PRACTICAL'
+                ELSE UPPER(MIN(fa.allocation_type))
+              END as allocation_type,
+              CASE 
+                WHEN COUNT(DISTINCT fa.allocation_type) > 1 THEN 'ALL'
+                WHEN COUNT(DISTINCT fa.batch) > 1 THEN 'ALL'
+                ELSE MIN(fa.batch)
+              END as batch,
               COUNT(DISTINCT fs_sub.id) as evaluation_count,
-              AVG(sc.p1_coverage_syllabus) as p1, AVG(sc.p2_topics_beyond) as p2,
-              AVG(sc.p3_technical_content) as p3, AVG(sc.p4_communication) as p4,
-              AVG(sc.p5_teaching_aids) as p5, AVG(sc.p6_motivation) as p6,
-              AVG(sc.p7_practical_skills) as p7, AVG(sc.p8_project_skills) as p8,
-              AVG(sc.p9_student_progress) as p9, AVG(sc.p10_punctuality) as p10,
-              AVG(sc.p11_domain_knowledge) as p11, AVG(sc.p12_interaction) as p12,
-              AVG(sc.p13_resolve_difficulties) as p13, AVG(sc.p14_cocurricular) as p14,
-              AVG(sc.p15_extracurricular) as p15, AVG(sc.p16_internship) as p16,
-              AVG(sc.total_raw) as avg_raw, AVG(sc.marks_out_of_25) as avg_marks
+              ROUND(AVG(sc.p1_coverage_syllabus), 2) as p1, ROUND(AVG(sc.p2_topics_beyond), 2) as p2,
+              ROUND(AVG(sc.p3_technical_content), 2) as p3, ROUND(AVG(sc.p4_communication), 2) as p4,
+              ROUND(AVG(sc.p5_teaching_aids), 2) as p5, ROUND(AVG(sc.p6_motivation), 2) as p6,
+              ROUND(AVG(sc.p7_practical_skills), 2) as p7, ROUND(AVG(sc.p8_project_skills), 2) as p8,
+              ROUND(AVG(sc.p9_student_progress), 2) as p9, ROUND(AVG(sc.p10_punctuality), 2) as p10,
+              ROUND(AVG(sc.p11_domain_knowledge), 2) as p11, ROUND(AVG(sc.p12_interaction), 2) as p12,
+              ROUND(AVG(sc.p13_resolve_difficulties), 2) as p13, ROUND(AVG(sc.p14_cocurricular), 2) as p14,
+              ROUND(AVG(sc.p15_extracurricular), 2) as p15, ROUND(AVG(sc.p16_internship), 2) as p16,
+              ROUND(AVG(sc.total_raw), 2) as avg_raw, ROUND(AVG(sc.marks_out_of_25), 2) as avg_marks
        FROM faculty_allocations fa
        JOIN faculties f ON fa.faculty_id = f.id
        JOIN subjects s ON fa.subject_id = s.id
        LEFT JOIN feedback_scores sc ON sc.allocation_id = fa.id
        LEFT JOIN feedback_submissions fs_sub ON sc.submission_id = fs_sub.id
        WHERE fa.session_id = ?
-       GROUP BY fa.id, fa.allocation_type, fa.batch, f.name, f.designation, s.name, s.code, s.id
-       ORDER BY s.id, fa.allocation_type, fa.batch`, [id]
+       GROUP BY f.id, s.id, f.name, f.designation, s.name, s.code
+       ORDER BY s.id, (CASE WHEN COUNT(DISTINCT fa.allocation_type) > 1 THEN 1 WHEN UPPER(MIN(fa.allocation_type)) = 'THEORY' THEN 2 ELSE 3 END), f.name`, [id]
     );
 
     // Submission tracking
@@ -139,10 +148,14 @@ async function downloadSessionExcel(req, res) {
     );
     if (!session) return res.status(404).json({ error: 'Session not found' });
 
-    // 1. Faculty Summary data
+    // 1. Faculty Summary data (combined theory & practical per subject)
     const facultySummary = await db.query(
       `SELECT f.name as "Faculty Name", f.designation as "Designation",
-              s.name as "Subject", s.code as "Code", fa.allocation_type as "Type", fa.batch as "Batch",
+              s.name as "Subject", s.code as "Code",
+              CASE 
+                WHEN COUNT(DISTINCT fa.allocation_type) > 1 THEN 'THEORY & PRACTICAL'
+                ELSE UPPER(MIN(fa.allocation_type))
+              END as "Type",
               COUNT(DISTINCT fs_sub.id) as "No. of Evaluations",
               ROUND(AVG(sc.p1_coverage_syllabus),2) as "P1", ROUND(AVG(sc.p2_topics_beyond),2) as "P2",
               ROUND(AVG(sc.p3_technical_content),2) as "P3", ROUND(AVG(sc.p4_communication),2) as "P4",
@@ -158,8 +171,8 @@ async function downloadSessionExcel(req, res) {
        LEFT JOIN feedback_scores sc ON sc.allocation_id = fa.id
        LEFT JOIN feedback_submissions fs_sub ON sc.submission_id = fs_sub.id
        WHERE fa.session_id = ?
-       GROUP BY fa.id, f.name, f.designation, s.name, s.code, fa.allocation_type, fa.batch, s.id
-       ORDER BY s.id`, [id]
+       GROUP BY f.id, s.id, f.name, f.designation, s.name, s.code
+       ORDER BY s.id, (CASE WHEN COUNT(DISTINCT fa.allocation_type) > 1 THEN 1 WHEN UPPER(MIN(fa.allocation_type)) = 'THEORY' THEN 2 ELSE 3 END), f.name`, [id]
     );
 
     // 2. Student-wise raw data
@@ -223,21 +236,21 @@ async function downloadSessionExcel(req, res) {
     }
 
     // Official Institutional Heading
-    ws1.mergeCells('B1:Y1');
+    ws1.mergeCells('B1:X1');
     const t1 = ws1.getCell('B1');
     t1.value = 'GOVERNMENT POLYTECHNIC AWASARI (KHURD)';
     t1.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FF1E1B4B' } };
     t1.alignment = { vertical: 'middle', horizontal: 'center' };
     ws1.getRow(1).height = 28;
 
-    ws1.mergeCells('B2:Y2');
+    ws1.mergeCells('B2:X2');
     const t2 = ws1.getCell('B2');
     t2.value = `Department of ${session.dept_name || 'Computer Engineering'} · MSBTE CIAAN-2023 K-Scheme`;
     t2.font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF4338CA' } };
     t2.alignment = { vertical: 'middle', horizontal: 'center' };
     ws1.getRow(2).height = 20;
 
-    ws1.mergeCells('B3:Y3');
+    ws1.mergeCells('B3:X3');
     const t3 = ws1.getCell('B3');
     t3.value = 'STUDENT FEEDBACK ON FACULTY PERFORMANCE - SUMMARY EVALUATION REPORT';
     t3.font = { name: 'Arial', size: 10.5, bold: true, color: { argb: 'FF334155' } };
@@ -272,10 +285,10 @@ async function downloadSessionExcel(req, res) {
       ws1.getCell(c).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF0F172A' } };
     });
 
-    // Table Header
+    // Table Header (Matching MSBTE Institutional format)
     const headers1 = [
-      'Sr No', 'Faculty Name', 'Designation', 'Subject Name', 'Subject Code',
-      'Type', 'Batch', 'Evaluations',
+      'No', 'Faculty Name', 'Designation', 'Subject Name', 'Subject Code',
+      'Type', 'Evaluations',
       'P1 (Syllabus)', 'P2 (Beyond)', 'P3 (Content)', 'P4 (Comm)',
       'P5 (Aids)', 'P6 (Motiv)', 'P7 (Pract)', 'P8 (Project)',
       'P9 (Feedback)', 'P10 (Punct)', 'P11 (Domain)', 'P12 (Interact)',
@@ -308,8 +321,7 @@ async function downloadSessionExcel(req, res) {
         f['Designation'] || 'Lecturer',
         f['Subject'] || '',
         f['Code'] || '',
-        (f['Type'] || '').toUpperCase(),
-        f['Batch'] || 'ALL',
+        f['Type'] || '',
         Number(f['No. of Evaluations']) || 0,
         f['P1'] !== null ? Number(f['P1']) : '-',
         f['P2'] !== null ? Number(f['P2']) : '-',
@@ -339,14 +351,14 @@ async function downloadSessionExcel(req, res) {
       r.getCell(3).alignment = { vertical: 'middle', horizontal: 'left' };
       r.getCell(4).alignment = { vertical: 'middle', horizontal: 'left' };
 
-      // Highlight Score cell
-      const scoreCell = r.getCell(25);
+      // Highlight Score cell (Column 24)
+      const scoreCell = r.getCell(24);
       scoreCell.font = { name: 'Arial', size: 10.5, bold: true, color: { argb: 'FF047857' } };
       scoreCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFECFDF5' } };
 
       const bg = i % 2 === 0 ? 'FFFFFFFF' : 'FFF8FAFC';
       r.eachCell((cell, colNum) => {
-        if (colNum !== 25) {
+        if (colNum !== 24) {
           cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
         }
         cell.border = {
@@ -362,10 +374,10 @@ async function downloadSessionExcel(req, res) {
 
     ws1.columns = [
       { width: 8 },   { width: 26 },  { width: 18 },  { width: 34 },  { width: 14 },
-      { width: 12 },  { width: 10 },  { width: 13 },  { width: 13 },  { width: 13 },
+      { width: 24 },  { width: 14 },  { width: 13 },  { width: 13 },  { width: 13 },
       { width: 13 },  { width: 13 },  { width: 13 },  { width: 13 },  { width: 13 },
       { width: 13 },  { width: 13 },  { width: 13 },  { width: 13 },  { width: 13 },
-      { width: 13 },  { width: 13 },  { width: 13 },  { width: 13 },  { width: 16 },
+      { width: 13 },  { width: 13 },  { width: 13 },  { width: 16 },
     ];
 
     // ────────────────────────────────────────────────────────────

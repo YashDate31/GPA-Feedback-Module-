@@ -22,10 +22,18 @@ async function getSubjects(req, res) {
   } catch (err) { res.status(500).json({ error: 'Server error' }); }
 }
 
+let cachedDepartments = null;
+
 // GET /api/departments
 async function getDepartments(req, res) {
   try {
+    if (cachedDepartments && cachedDepartments.length > 0) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.json({ departments: cachedDepartments });
+    }
     const rows = await db.query('SELECT * FROM departments ORDER BY code');
+    cachedDepartments = rows;
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({ departments: rows });
   } catch (err) { res.status(500).json({ error: 'Server error' }); }
 }

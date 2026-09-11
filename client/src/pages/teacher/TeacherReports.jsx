@@ -219,8 +219,25 @@ export default function TeacherReports() {
                         <tr key={i}>
                           <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{f.faculty_name}</td>
                           <td style={{ fontSize: 12 }}>{f.subject_name}</td>
-                          <td><span className={`badge badge-${f.allocation_type === 'theory' ? 'primary' : 'success'}`} style={{ fontSize: 10 }}>{f.allocation_type}</span></td>
-                          <td>{f.batch !== 'ALL' ? <span className="badge badge-gray">{f.batch}</span> : '—'}</td>
+                          <td>
+                            <span
+                              className="badge"
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                background: f.allocation_type === 'THEORY & PRACTICAL'
+                                  ? '#4f46e5'
+                                  : f.allocation_type?.toLowerCase().includes('theory')
+                                  ? 'var(--primary-600)'
+                                  : '#059669',
+                                color: '#ffffff',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {f.allocation_type}
+                            </span>
+                          </td>
+                          <td>{f.batch && f.batch !== 'ALL' ? <span className="badge badge-gray">{f.batch}</span> : <span style={{ color: 'var(--gray-400)' }}>—</span>}</td>
                           {[f.p1,f.p2,f.p3,f.p4,f.p5,f.p6,f.p7,f.p8].map((v, pi) => (
                             <td key={pi} style={{ textAlign: 'center', fontSize: 12, color: v >= 4 ? 'var(--accent-700)' : v >= 3 ? 'var(--gray-700)' : 'var(--red-500)' }}>
                               {v ? parseFloat(v).toFixed(1) : '—'}

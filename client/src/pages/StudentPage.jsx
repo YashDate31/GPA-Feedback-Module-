@@ -28,21 +28,47 @@ const PARAM_KEYS = [
   'p9_student_progress','p10_punctuality','p11_domain_knowledge','p12_interaction',
   'p13_resolve_difficulties','p14_cocurricular','p15_extracurricular','p16_internship',
 ];
-// Parameter 16 (Guidance during Internship) is optional. Only parameters 1 to 15 are compulsory.
-const REQUIRED_PARAM_KEYS = PARAM_KEYS.filter(k => k !== 'p16_internship');
+const DEFAULT_DEPARTMENTS = [
+  { id: 1, code: 'CO', name: 'Computer Engineering' },
+  { id: 2, code: 'CE', name: 'Civil Engineering' },
+  { id: 3, code: 'ME', name: 'Mechanical Engineering' },
+  { id: 4, code: 'EE', name: 'Electrical Engineering' },
+  { id: 5, code: 'ETC', name: 'Electronics & Telecommunication Engineering' },
+  { id: 6, code: 'IT', name: 'Information Technology' },
+];
+
+function getInitialDepartments() {
+  try {
+    const cached = localStorage.getItem('gpa_cached_depts');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return DEFAULT_DEPARTMENTS;
+}
+
 const RATING_LABELS = { 1: 'Very Poor', 2: 'Poor', 3: 'Average', 4: 'Good', 5: 'Excellent' };
 
 // ─── Step 1: Student Info ───────────────────────────────────
 function StepInfo({ onVerified }) {
   const [form, setForm] = useState({ enrollment_no: '', semester: '', batch: '', department_id: '' });
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState(getInitialDepartments);
   const [sessions, setSessions] = useState([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
   const [selectedSession, setSelectedSession] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/departments').then(r => setDepartments(r.data.departments)).catch(() => {});
+    API.get('/departments')
+      .then(r => {
+        if (r.data?.departments?.length) {
+          setDepartments(r.data.departments);
+          try { localStorage.setItem('gpa_cached_depts', JSON.stringify(r.data.departments)); } catch (e) {}
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleSemBatchChange = (field, val) => {
@@ -51,6 +77,7 @@ function StepInfo({ onVerified }) {
     setSessions([]);
     setSelectedSession('');
     if (updated.department_id && updated.semester) {
+      setSessionsLoading(true);
       API.get(`/feedback/sessions-public?department_id=${updated.department_id}&semester=${updated.semester}`)
         .then(r => {
           const list = r.data.sessions || [];
@@ -59,7 +86,8 @@ function StepInfo({ onVerified }) {
             setSelectedSession(list[0].id);
           }
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => setSessionsLoading(false));
     }
   };
 
@@ -95,7 +123,7 @@ function StepInfo({ onVerified }) {
         <ul>
           <li>Enter your enrollment number exactly as on your ID card</li>
           <li>One submission allowed per session</li>
-          <li>All 16 parameters must be rated for each faculty</li>
+          <li>All parameters must be rated for each faculty (Guidance during Internship is compulsory for Sem 5 & 6)</li>
         </ul>
       </div>
 
@@ -177,9 +205,16 @@ function StepInfo({ onVerified }) {
           </div>
         )}
 
-        {form.department_id && form.semester && sessions.length === 0 && (
+        {sessionsLoading && (
+          <div className="gform-card" style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--primary-600)', fontSize: 13, padding: '14px 18px' }}>
+            <div style={{ width: 14, height: 14, border: '2px solid var(--primary-600)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            Checking active feedback sessions...
+          </div>
+        )}
+
+        {!sessionsLoading && form.department_id && form.semester && sessions.length === 0 && (
           <div className="gform-card gform-alert">
-            <AlertCircle size={16} /> No active feedback session for this semester. Contact your class teacher.
+            <AlertCircle size={16} /> No active feedback session found for this department & semester. Contact your class teacher.
           </div>
         )}
 
@@ -308,10 +343,13 @@ function StepFeedback({ verifyData, onSubmitted }) {
     setScores(prev => ({ ...prev, [allocId]: { ...(prev[allocId] || {}), [paramKey]: val } }));
   };
 
-  // Only parameters 1 to 15 are compulsory! Parameter 16 is optional.
+  const isInternshipCompulsory = [5, 6, '5', '6'].includes(session?.semester);
+  const requiredParamKeys = isInternshipCompulsory ? PARAM_KEYS : PARAM_KEYS.filter(k => k !== 'p16_internship');
+
+  // For Semester 5 & 6, all 16 parameters are compulsory. For Semester 1-4, parameters 1 to 15 are compulsory.
   const isSectionComplete = (allocId) => {
     const s = scores[allocId] || {};
-    return REQUIRED_PARAM_KEYS.every(k => s[k]);
+    return requiredParamKeys.every(k => s[k]);
   };
 
   const currentAlloc = allocations[currentIdx];
@@ -321,7 +359,7 @@ function StepFeedback({ verifyData, onSubmitted }) {
   const handleNextFaculty = () => {
     if (!isCurrentComplete) {
       const currentScores = scores[currentAlloc.id] || {};
-      const missingKey = REQUIRED_PARAM_KEYS.find(k => !currentScores[k]);
+      const missingKey = requiredParamKeys.find(k => !currentScores[k]);
       if (missingKey) {
         const missingIndex = PARAM_KEYS.indexOf(missingKey);
         toast.error(`Please rate parameter ${missingIndex + 1}: "${PARAM_LABELS[missingIndex]}"`);
@@ -343,7 +381,11 @@ function StepFeedback({ verifyData, onSubmitted }) {
 
   const handleSubmit = async () => {
     if (!allComplete) {
-      toast.error('Please complete compulsory parameters (1 to 15) for every faculty');
+      toast.error(
+        isInternshipCompulsory
+          ? 'Please rate all 16 parameters (including Guidance during Internship) for every faculty'
+          : 'Please complete compulsory parameters (1 to 15) for every faculty'
+      );
       return;
     }
     setSubmitting(true);
@@ -521,7 +563,8 @@ function StepFeedback({ verifyData, onSubmitted }) {
                 Rate each parameter from 1 to 5:
               </span>
               <span style={{ fontSize: 11.5, color: '#64748b' }}>
-                1 = Very Poor &nbsp;|&nbsp; 5 = Excellent &nbsp;(Point 16 is optional)
+                1 = Very Poor &nbsp;|&nbsp; 5 = Excellent &nbsp;
+                {isInternshipCompulsory ? `(All 16 parameters compulsory for Sem ${session.semester})` : '(Point 16 is optional)'}
               </span>
             </div>
 
@@ -529,7 +572,7 @@ function StepFeedback({ verifyData, onSubmitted }) {
             <div className="rating-card-list">
               {PARAM_LABELS.map((label, pi) => {
                 const pKey = PARAM_KEYS[pi];
-                const isOpt = pKey === 'p16_internship';
+                const isOpt = pKey === 'p16_internship' && !isInternshipCompulsory;
                 return (
                   <RatingRow
                     key={pi}
