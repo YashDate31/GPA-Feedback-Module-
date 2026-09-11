@@ -114,7 +114,7 @@ function StepInfo({ onVerified }) {
         <div className="gform-logo"><img src="/logo.png" alt="Government Polytechnic Awasari (Kh) Logo" /></div>
         <div>
           <h1>Student Feedback Form</h1>
-          <p>Government Polytechnic Awasari (Kh) · Department of Computer Engineering</p>
+          <p>Government Polytechnic Awasari (Kh) · MSBTE Faculty Feedback Portal</p>
         </div>
       </div>
 
@@ -449,7 +449,7 @@ function StepFeedback({ verifyData, onSubmitted }) {
         </div>
 
         {/* Step Buttons */}
-        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
+        <div className="no-scrollbar" style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {allocations.map((a, i) => {
             const done = isSectionComplete(a.id);
             const active = currentIdx === i;
@@ -559,13 +559,23 @@ function StepFeedback({ verifyData, onSubmitted }) {
           {/* Scale Legend Header & Question Cards */}
           <div style={{ padding: '16px 16px 4px' }}>
             <div className="gform-scale-legend">
-              <span style={{ fontWeight: 700, color: '#1e293b' }}>
-                Rate each parameter from 1 to 5:
-              </span>
-              <span style={{ fontSize: 11.5, color: '#64748b' }}>
-                1 = Very Poor &nbsp;|&nbsp; 5 = Excellent &nbsp;
-                {isInternshipCompulsory ? `(All 16 parameters compulsory for Sem ${session.semester})` : '(Point 16 is optional)'}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontWeight: 700, color: '#1e293b', fontSize: 13 }}>
+                  Rate each parameter on 1 to 5 scale:
+                </span>
+                <span style={{ fontSize: 12, color: '#64748b' }}>
+                  (1 = Very Poor &bull; 5 = Excellent)
+                </span>
+              </div>
+              {isInternshipCompulsory ? (
+                <span style={{ fontSize: 11.5, background: '#e0e7ff', color: '#4338ca', fontWeight: 600, padding: '3px 10px', borderRadius: 12, display: 'inline-block' }}>
+                  All 16 parameters compulsory for Sem {session.semester}
+                </span>
+              ) : (
+                <span style={{ fontSize: 11.5, background: '#ffffff', color: '#64748b', padding: '3px 10px', borderRadius: 12, border: '1px solid #cbd5e1', display: 'inline-block' }}>
+                  Point 16 is optional
+                </span>
+              )}
             </div>
 
             {/* Touch Ratings List */}
@@ -643,7 +653,7 @@ function StepDone({ refCode }) {
           <button className="btn btn-primary" onClick={() => navigate('/')}>Back to Home</button>
         </div>
         <div style={{ marginTop: 24, fontSize: 12, color: 'var(--gray-500)', borderTop: '1px solid var(--gray-200)', paddingTop: 16 }}>
-          Government Polytechnic Awasari (Khurd) · Department of Computer Engineering
+          Government Polytechnic Awasari (Khurd) · MSBTE CIAAN-2023 K-Scheme
         </div>
       </div>
     </div>

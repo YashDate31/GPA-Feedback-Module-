@@ -548,6 +548,14 @@ tbody tr:last-child td { border-bottom: none; }
   border: 1.5px solid #e9d5ff;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ═══════════════════════════════════════════════
    MOBILE-FIRST RATING SCALE
 ═══════════════════════════════════════════════ */

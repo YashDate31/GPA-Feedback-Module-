@@ -24,7 +24,7 @@ export default function TeacherLayout() {
             </div>
             <div>
               <div className="brand-name">Government Polytechnic Awasari (Kh)</div>
-              <div className="brand-tagline">Department of Computer Engineering · Class Teacher Portal (Sem {user?.semester})</div>
+              <div className="brand-tagline">{user?.dept_name ? `Department of ${user.dept_name}` : 'MSBTE Faculty Feedback'} · Class Teacher Portal (Sem {user?.semester})</div>
             </div>
           </div>
           <div className="navbar-nav" style={{ gap: 12 }}>

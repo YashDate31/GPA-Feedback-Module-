@@ -32,14 +32,17 @@ export default function LoginPage() {
         <div className="login-header">
           <div className="icon"><img src="/logo.png" alt="Government Polytechnic Awasari (Kh) Logo" /></div>
           <h1>Class Teacher Login</h1>
-          <p>Government Polytechnic Awasari (Kh) · CO Dept</p>
+          <p>Government Polytechnic Awasari (Kh) · All Departments</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label required">Username</label>
-            <input className="form-control" placeholder="Enter username" value={form.username}
+            <input className="form-control" placeholder="e.g. computer@first, civil@second, mechanical@third" value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value.toLowerCase().trim() }))} required autoFocus />
+            <div style={{ fontSize: 11, color: 'var(--gray-500)', marginTop: 4 }}>
+              Format: <code>&lt;branch&gt;@&lt;sem&gt;</code> (e.g. <code>computer@first</code>, <code>civil@third</code>, <code>mechanical@fifth</code>)
+            </div>
           </div>
 
           <div className="form-group">
@@ -64,7 +67,7 @@ export default function LoginPage() {
         </button>
 
         <div style={{ marginTop: 16, textAlign: 'center', fontSize: 11, color: 'var(--gray-400)' }}>
-          Government Polytechnic Awasari (Kh) · Computer Engineering
+          Government Polytechnic Awasari (Kh) · All Departments · MSBTE K-Scheme
         </div>
       </div>
     </div>
