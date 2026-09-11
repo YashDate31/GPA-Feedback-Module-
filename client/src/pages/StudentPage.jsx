@@ -185,7 +185,7 @@ function StepInfo({ onVerified }) {
 
         <div className="gform-card">
           <div className="gform-q-label">Enrollment Number <span className="req">*</span></div>
-          <input className="gform-input" placeholder="e.g. 24210270230" value={form.enrollment_no}
+          <input className="gform-input" placeholder="e.g. 24210270001" value={form.enrollment_no}
             onChange={e => setForm(f => ({ ...f, enrollment_no: e.target.value.toUpperCase().trim() }))} />
           <div className="gform-hint">Enter your MSBTE enrollment number exactly as on your ID card</div>
         </div>
@@ -600,7 +600,7 @@ function StepDone({ refCode }) {
           <button className="btn btn-primary" onClick={() => navigate('/')}>Back to Home</button>
         </div>
         <div style={{ marginTop: 24, fontSize: 12, color: 'var(--gray-500)', borderTop: '1px solid var(--gray-200)', paddingTop: 16 }}>
-          Government Polytechnic Awasari (Khurd) · Module Developed by <strong>Yash Vijay Date</strong> (Enroll: 24210270230)
+          Government Polytechnic Awasari (Khurd) · Department of Computer Engineering
         </div>
       </div>
     </div>

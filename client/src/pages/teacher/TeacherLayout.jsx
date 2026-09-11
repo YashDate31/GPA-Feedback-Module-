@@ -73,10 +73,6 @@ export default function TeacherLayout() {
               <div style={{ fontSize: 11, color: 'var(--primary-600)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{user?.dept_code}</div>
               <div style={{ fontSize: 12, color: 'var(--gray-600)' }}>Semester {user?.semester}</div>
             </div>
-            <div style={{ marginTop: 8, padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 8, border: '1px solid var(--gray-200)', fontSize: 11, color: 'var(--gray-500)' }}>
-              <div style={{ fontWeight: 600, color: 'var(--gray-700)' }}>Dev: Yash Vijay Date</div>
-              <div style={{ fontSize: 10, color: 'var(--gray-400)' }}>Enroll: 24210270230 (CO)</div>
-            </div>
           </div>
         </aside>
         <main className="main-content"><Outlet /></main>

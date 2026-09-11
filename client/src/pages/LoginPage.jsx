@@ -64,7 +64,7 @@ export default function LoginPage() {
         </button>
 
         <div style={{ marginTop: 16, textAlign: 'center', fontSize: 11, color: 'var(--gray-400)' }}>
-          Developed by <strong>Yash Vijay Date</strong> (Enroll: 24210270230)
+          Government Polytechnic Awasari (Kh) · Computer Engineering
         </div>
       </div>
     </div>
