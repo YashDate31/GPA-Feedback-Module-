@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { BarChart3, Download, CheckCircle, Clock, RefreshCw, Printer, Users } from 'lucide-react';
+import { BarChart3, Download, FileText, CheckCircle, Clock, RefreshCw, Printer, Users } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import toast from 'react-hot-toast';
+import { exportReportPDF } from '../../utils/generateReportPDF';
 
 const PARAM_LABELS = [
   'Coverage of Syllabus','Topics Beyond Syllabus','Technical Content','Communication Skills',
@@ -66,6 +67,18 @@ export default function TeacherReports() {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    if (!report) { toast.error('Select a session first'); return; }
+    try {
+      toast.loading('Generating official MSBTE PDF report...', { id: 'download-pdf' });
+      await exportReportPDF(report);
+      toast.success('PDF report downloaded successfully!', { id: 'download-pdf' });
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to generate PDF report', { id: 'download-pdf' });
+    }
+  };
+
   const handlePrint = () => window.print();
 
   const participationPct = report
@@ -77,12 +90,13 @@ export default function TeacherReports() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h2 style={{ marginBottom: 4 }}>Reports & Download</h2>
-          <p style={{ margin: 0 }}>View feedback results and download Excel reports</p>
+          <p style={{ margin: 0 }}>View feedback results and download Excel / PDF reports</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }} className="no-print">
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} className="no-print">
           {report && (
             <>
               <button className="btn btn-success" onClick={handleDownloadExcel}><Download size={15} /> Download Excel</button>
+              <button className="btn btn-primary" style={{ background: '#dc2626', borderColor: '#dc2626', color: '#fff' }} onClick={handleDownloadPDF}><FileText size={15} /> Download PDF</button>
               <button className="btn btn-secondary" onClick={handlePrint}><Printer size={15} /> Print</button>
             </>
           )}
@@ -198,9 +212,14 @@ export default function TeacherReports() {
           {activeTab === 'results' && (
             <div className="card">
               <div className="card-header"><BarChart3 size={18} color="var(--primary-600)" /><h3>Faculty Score Summary</h3>
-                <button className="btn btn-success btn-sm" style={{ marginLeft: 'auto' }} onClick={handleDownloadExcel}>
-                  <Download size={14} /> Download Excel
-                </button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button className="btn btn-success btn-sm" onClick={handleDownloadExcel}>
+                    <Download size={14} /> Download Excel
+                  </button>
+                  <button className="btn btn-sm" style={{ background: '#dc2626', borderColor: '#dc2626', color: '#fff' }} onClick={handleDownloadPDF}>
+                    <FileText size={14} /> Download PDF
+                  </button>
+                </div>
               </div>
               <div className="table-wrapper">
                 {report.faculty_reports.length === 0 ? (
