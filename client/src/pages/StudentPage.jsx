@@ -29,21 +29,22 @@ const PARAM_KEYS = [
   'p13_resolve_difficulties','p14_cocurricular','p15_extracurricular','p16_internship',
 ];
 const DEFAULT_DEPARTMENTS = [
-  { id: 1, code: 'CO', name: 'Computer Engineering' },
+  { id: 7, code: 'AE', name: 'Automobile Engineering' },
   { id: 2, code: 'CE', name: 'Civil Engineering' },
-  { id: 3, code: 'ME', name: 'Mechanical Engineering' },
+  { id: 1, code: 'CO', name: 'Computer Engineering' },
   { id: 4, code: 'EE', name: 'Electrical Engineering' },
   { id: 5, code: 'ETC', name: 'Electronics & Telecommunication Engineering' },
   { id: 6, code: 'IT', name: 'Information Technology' },
-  { id: 7, code: 'AE', name: 'Automobile Engineering' },
+  { id: 3, code: 'ME', name: 'Mechanical Engineering' },
 ];
 
 function getInitialDepartments() {
   try {
-    const cached = localStorage.getItem('gpa_cached_depts');
+    localStorage.removeItem('gpa_cached_depts'); // Remove legacy cache without Automobile
+    const cached = localStorage.getItem('gpa_cached_depts_v2');
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.some(d => d.code === 'AE')) return parsed;
     }
   } catch (e) {}
   return DEFAULT_DEPARTMENTS;
@@ -66,7 +67,7 @@ function StepInfo({ onVerified }) {
       .then(r => {
         if (r.data?.departments?.length) {
           setDepartments(r.data.departments);
-          try { localStorage.setItem('gpa_cached_depts', JSON.stringify(r.data.departments)); } catch (e) {}
+          try { localStorage.setItem('gpa_cached_depts_v2', JSON.stringify(r.data.departments)); } catch (e) {}
         }
       })
       .catch(() => {});
