@@ -15,7 +15,7 @@ export default function LandingPage() {
             </div>
             <div>
               <div className="landing-inst">Government Polytechnic Awasari (Khurd)</div>
-              <div className="landing-scheme">Department of Computer Engineering</div>
+              <div className="landing-scheme">All Engineering Departments</div>
             </div>
           </div>
 
@@ -38,7 +38,7 @@ export default function LandingPage() {
           </div>
           <h1 className="landing-title">Student Feedback on<br />Faculty Performance</h1>
           <p className="landing-subtitle">
-            Government Polytechnic Awasari (Kh) · Computer Engineering Department · MSBTE K-Scheme
+            Government Polytechnic Awasari (Kh) · All Engineering Departments · MSBTE K-Scheme
           </p>
 
           <div className="landing-cards">
@@ -65,7 +65,7 @@ export default function LandingPage() {
               <div className="lc-features">
                 <span><CheckCircle size={13} /> Create sessions</span>
                 <span><CheckCircle size={13} /> Track submissions</span>
-                <span><CheckCircle size={13} /> Download Excel</span>
+                <span><CheckCircle size={13} /> Download Excel & PDF</span>
               </div>
               <button className="btn btn-outline" id="teacher-login-btn">
                 Login →
@@ -77,7 +77,7 @@ export default function LandingPage() {
           <div className="landing-info-strip">
             <span>📋 16 MSBTE Parameters</span>
             <span>🔒 Enrollment Verified</span>
-            <span>📊 Excel Reports</span>
+            <span>📊 Excel & PDF Reports</span>
             <span>👥 Batch-wise Practical</span>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function LandingPage() {
 
       {/* Basic Clean Footer */}
       <footer className="landing-footer">
-        <p>© 2025 Government Polytechnic Awasari (Khurd) · Department of Computer Engineering</p>
+        <p>© 2025 Government Polytechnic Awasari (Khurd) · All Departments</p>
         <p className="landing-footer-sub">MSBTE K-Scheme Faculty Feedback Portal</p>
       </footer>
     </div>

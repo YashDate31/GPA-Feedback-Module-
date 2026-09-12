@@ -30,7 +30,7 @@ export default function AboutPage() {
             </div>
             <div>
               <div className="landing-inst">Government Polytechnic Awasari (Khurd)</div>
-              <div className="landing-scheme">Department of Computer Engineering</div>
+              <div className="landing-scheme">All Engineering Departments</div>
             </div>
           </div>
           <div>
@@ -66,7 +66,7 @@ export default function AboutPage() {
             About the System & Developer
           </h1>
           <p style={{ fontSize: 14.5, color: '#64748b', maxWidth: 580, margin: '0 auto', lineHeight: 1.6 }}>
-            Faculty Performance Feedback Evaluation Module developed for Government Polytechnic Awasari (Khurd), Computer Engineering Department.
+            Faculty Performance Feedback Evaluation Module developed for Government Polytechnic Awasari (Khurd), across all Engineering Departments.
           </p>
         </div>
 
@@ -385,7 +385,7 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="landing-footer" style={{ borderTop: '1px solid #e2e8f0', background: '#ffffff' }}>
         <div style={{ marginBottom: 4 }}>
-          © 2025 Government Polytechnic Awasari (Khurd) · Department of Computer Engineering
+          © 2025 Government Polytechnic Awasari (Khurd) · All Departments
         </div>
         <div style={{ fontSize: 11, color: '#64748b' }}>
           Designed & Developed by <strong style={{ color: '#0f172a' }}>Yash Vijay Date</strong> (Enrollment: 24210270230) · Computer Engineering Batch 2024–27
