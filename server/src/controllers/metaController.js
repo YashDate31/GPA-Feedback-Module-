@@ -53,13 +53,34 @@ async function addFaculty(req, res) {
   const { name, designation, department_id, email } = req.body;
   if (!name || !department_id) return res.status(400).json({ error: 'Name and department required' });
   try {
+    const trimmedName = name.trim();
+    // Guard against accidental double taps: check if faculty already exists in this department
+    const existing = await db.query(
+      'SELECT * FROM faculties WHERE LOWER(TRIM(name)) = LOWER(?) AND department_id = ?',
+      [trimmedName, department_id]
+    );
+    if (existing && existing.length > 0) {
+      return res.status(200).json({ faculty: existing[0], message: 'Faculty already exists' });
+    }
+
     const result = await db.query(
       'INSERT INTO faculties (name, designation, department_id, email) VALUES (?, ?, ?, ?)',
-      [name.trim(), designation || null, department_id, email || null]
+      [trimmedName, designation || null, department_id, email || null]
     );
     const [newFaculty] = await db.query('SELECT * FROM faculties WHERE id = ?', [result.insertId]);
     res.status(201).json({ faculty: newFaculty });
-  } catch (err) { res.status(500).json({ error: 'Server error' }); }
+  } catch (err) {
+    if (err.code === '23505' || err.code === 'ER_DUP_ENTRY' || (err.message && err.message.toLowerCase().includes('unique'))) {
+      const existing = await db.query(
+        'SELECT * FROM faculties WHERE LOWER(TRIM(name)) = LOWER(?) AND department_id = ?',
+        [name.trim(), department_id]
+      );
+      if (existing && existing.length > 0) {
+        return res.status(200).json({ faculty: existing[0], message: 'Faculty already exists' });
+      }
+    }
+    res.status(500).json({ error: 'Server error' });
+  }
 }
 
 // DELETE /api/faculties/:id

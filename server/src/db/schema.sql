@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS faculties (
   department_id INT NOT NULL,
   email VARCHAR(150),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (department_id) REFERENCES departments(id)
+  FOREIGN KEY (department_id) REFERENCES departments(id),
+  UNIQUE KEY unique_faculty_dept (name, department_id)
 );
 
 CREATE TABLE IF NOT EXISTS subjects (

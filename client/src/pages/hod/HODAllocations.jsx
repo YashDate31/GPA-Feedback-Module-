@@ -15,6 +15,7 @@ export default function HODAllocations() {
   const [saving, setSaving] = useState({});
   const [newFacultyForm, setNewFacultyForm] = useState({ name: '', designation: '' });
   const [showAddFaculty, setShowAddFaculty] = useState(false);
+  const [submittingFaculty, setSubmittingFaculty] = useState(false);
 
   useEffect(() => {
     API.get(`/sessions?department_id=${user.department_id}`).then(r => setSessions(r.data.sessions));
@@ -67,15 +68,21 @@ export default function HODAllocations() {
 
   const handleAddFaculty = async (e) => {
     e.preventDefault();
-    if (!newFacultyForm.name) { toast.error('Name required'); return; }
+    if (submittingFaculty) return;
+    if (!newFacultyForm.name.trim()) { toast.error('Name required'); return; }
+    setSubmittingFaculty(true);
     try {
       await API.post('/faculties', { ...newFacultyForm, department_id: user.department_id });
       const r = await API.get(`/faculties?department_id=${user.department_id}`);
       setFaculties(r.data.faculties);
       setNewFacultyForm({ name: '', designation: '' });
       setShowAddFaculty(false);
-      toast.success('Faculty added');
-    } catch { toast.error('Failed to add faculty'); }
+      toast.success('Faculty member saved');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to add faculty');
+    } finally {
+      setSubmittingFaculty(false);
+    }
   };
 
   const theorySubjects = subjects.filter(s => s.type === 'theory');
@@ -137,8 +144,10 @@ export default function HODAllocations() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button type="submit" className="btn btn-primary btn-sm">Add Faculty</button>
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddFaculty(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submittingFaculty}>
+                  {submittingFaculty ? 'Saving...' : 'Add Faculty'}
+                </button>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddFaculty(false)} disabled={submittingFaculty}>Cancel</button>
               </div>
             </form>
           </div>

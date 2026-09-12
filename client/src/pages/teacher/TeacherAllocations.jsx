@@ -85,9 +85,11 @@ export default function TeacherAllocations() {
   // Modals
   const [showAddFaculty, setShowAddFaculty] = useState(false);
   const [newFaculty, setNewFaculty] = useState({ name: '', designation: '' });
+  const [submittingFaculty, setSubmittingFaculty] = useState(false);
 
   const [showAddSubject, setShowAddSubject] = useState(false);
   const [newSubject, setNewSubject] = useState({ code: '', name: '', type: 'both' });
+  const [submittingSubject, setSubmittingSubject] = useState(false);
 
   const loadData = () => {
     if (!user?.department_id) return;
@@ -169,25 +171,31 @@ export default function TeacherAllocations() {
 
   const handleAddFaculty = async (e) => {
     e.preventDefault();
+    if (submittingFaculty) return;
     if (!newFaculty.name.trim()) { toast.error('Faculty name required'); return; }
+    setSubmittingFaculty(true);
     try {
       await API.post('/faculties', { ...newFaculty, department_id: user.department_id });
       const r = await API.get(`/faculties?department_id=${user.department_id}`);
       setFaculties(r.data.faculties);
       setNewFaculty({ name: '', designation: '' });
       setShowAddFaculty(false);
-      toast.success('Faculty member added');
-    } catch {
-      toast.error('Failed to add faculty');
+      toast.success('Faculty member saved');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to add faculty');
+    } finally {
+      setSubmittingFaculty(false);
     }
   };
 
   const handleAddSubject = async (e) => {
     e.preventDefault();
+    if (submittingSubject) return;
     if (!newSubject.code.trim() || !newSubject.name.trim()) {
       toast.error('Subject code and name required');
       return;
     }
+    setSubmittingSubject(true);
     try {
       await API.post('/subjects', {
         ...newSubject,
@@ -201,6 +209,8 @@ export default function TeacherAllocations() {
       toast.success('Subject added');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to add subject');
+    } finally {
+      setSubmittingSubject(false);
     }
   };
 
@@ -251,8 +261,10 @@ export default function TeacherAllocations() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button type="submit" className="btn btn-primary btn-sm">Save Faculty</button>
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddFaculty(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submittingFaculty}>
+                  {submittingFaculty ? 'Saving...' : 'Save Faculty'}
+                </button>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddFaculty(false)} disabled={submittingFaculty}>Cancel</button>
               </div>
             </form>
           </div>
@@ -284,8 +296,10 @@ export default function TeacherAllocations() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button type="submit" className="btn btn-primary btn-sm">Create Subject</button>
-                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddSubject(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submittingSubject}>
+                  {submittingSubject ? 'Saving...' : 'Create Subject'}
+                </button>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowAddSubject(false)} disabled={submittingSubject}>Cancel</button>
               </div>
             </form>
           </div>

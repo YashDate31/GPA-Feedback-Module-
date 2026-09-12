@@ -12,6 +12,10 @@ function normalizeUsername(u) {
   s = s.replace(/^me@/, 'mechanical@');
   s = s.replace(/^ee@/, 'electrical@');
   s = s.replace(/^etc@/, 'entc@');
+  s = s.replace(/^ej@/, 'entc@');
+  s = s.replace(/^ae@/, 'automobile@');
+  s = s.replace(/^auto@/, 'automobile@');
+  s = s.replace(/^if@/, 'it@');
   s = s.replace(/@(1|sem1|sem_1)$/, '@first');
   s = s.replace(/@(2|sem2|sem_2)$/, '@second');
   s = s.replace(/@(3|sem3|sem_3)$/, '@third');

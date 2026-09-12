@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS faculties (
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_faculties_dept_lower_name ON faculties (department_id, LOWER(TRIM(name)));
+
 -- 5. Subjects Table (MSBTE Curriculum)
 CREATE TABLE IF NOT EXISTS subjects (
   id SERIAL PRIMARY KEY,
@@ -146,7 +148,8 @@ INSERT INTO departments (code, name) VALUES
   ('ME', 'Mechanical Engineering'),
   ('EE', 'Electrical Engineering'),
   ('ETC', 'Electronics & Telecommunication Engineering'),
-  ('IT', 'Information Technology')
+  ('IT', 'Information Technology'),
+  ('AE', 'Automobile Engineering')
 ON CONFLICT (code) DO NOTHING;
 
 -- 2. Academic Years

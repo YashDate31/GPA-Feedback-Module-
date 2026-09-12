@@ -35,6 +35,7 @@ const DEFAULT_DEPARTMENTS = [
   { id: 4, code: 'EE', name: 'Electrical Engineering' },
   { id: 5, code: 'ETC', name: 'Electronics & Telecommunication Engineering' },
   { id: 6, code: 'IT', name: 'Information Technology' },
+  { id: 7, code: 'AE', name: 'Automobile Engineering' },
 ];
 
 function getInitialDepartments() {

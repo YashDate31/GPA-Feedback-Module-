@@ -201,7 +201,8 @@ async function seedDataMysql() {
       ('ME', 'Mechanical Engineering'),
       ('EE', 'Electrical Engineering'),
       ('ETC', 'Electronics & Telecommunication Engineering'),
-      ('IT', 'Information Technology')
+      ('IT', 'Information Technology'),
+      ('AE', 'Automobile Engineering')
     `);
 
     await conn.query(`

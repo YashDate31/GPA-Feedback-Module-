@@ -38,10 +38,10 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label required">Username</label>
-            <input className="form-control" placeholder="e.g. computer@first, civil@second, mechanical@third" value={form.username}
+            <input className="form-control" placeholder="e.g. computer@first, automobile@second, mechanical@third" value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value.toLowerCase().trim() }))} required autoFocus />
             <div style={{ fontSize: 11, color: 'var(--gray-500)', marginTop: 4 }}>
-              Format: <code>&lt;branch&gt;@&lt;sem&gt;</code> (e.g. <code>computer@first</code>, <code>civil@third</code>, <code>mechanical@fifth</code>)
+              Format: <code>&lt;branch&gt;@&lt;sem&gt;</code> (e.g. <code>computer@first</code>, <code>automobile@third</code>, <code>civil@fifth</code>)
             </div>
           </div>
 
