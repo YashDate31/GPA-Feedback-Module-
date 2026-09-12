@@ -38,24 +38,12 @@ const DEFAULT_DEPARTMENTS = [
   { id: 3, code: 'ME', name: 'Mechanical Engineering' },
 ];
 
-function getInitialDepartments() {
-  try {
-    localStorage.removeItem('gpa_cached_depts'); // Remove legacy cache without Automobile
-    const cached = localStorage.getItem('gpa_cached_depts_v2');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.some(d => d.code === 'AE')) return parsed;
-    }
-  } catch (e) {}
-  return DEFAULT_DEPARTMENTS;
-}
-
 const RATING_LABELS = { 1: 'Very Poor', 2: 'Poor', 3: 'Average', 4: 'Good', 5: 'Excellent' };
 
 // ─── Step 1: Student Info ───────────────────────────────────
 function StepInfo({ onVerified }) {
   const [form, setForm] = useState({ enrollment_no: '', semester: '', batch: '', department_id: '' });
-  const [departments, setDepartments] = useState(getInitialDepartments);
+  const [departments, setDepartments] = useState(DEFAULT_DEPARTMENTS);
   const [sessions, setSessions] = useState([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [selectedSession, setSelectedSession] = useState('');
@@ -63,11 +51,15 @@ function StepInfo({ onVerified }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    try {
+      localStorage.removeItem('gpa_cached_depts');
+      localStorage.removeItem('gpa_cached_depts_v2');
+    } catch (e) {}
+
     API.get('/departments')
       .then(r => {
         if (r.data?.departments?.length) {
           setDepartments(r.data.departments);
-          try { localStorage.setItem('gpa_cached_depts_v2', JSON.stringify(r.data.departments)); } catch (e) {}
         }
       })
       .catch(() => {});
