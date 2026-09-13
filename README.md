@@ -107,7 +107,7 @@ GPA Feedback Module/
    - **Plan**: `Free`
 4. Add **Environment Variables**:
    - `DATABASE_URL`: *(Paste your Supabase connection URI from Step 1)*
-   - `JWT_SECRET`: `msbte_college_feedback_jwt_secret_2025`
+   - `JWT_SECRET`: *(Generate and set a strong, random 32+ character secret string)*
    - `NODE_ENV`: `production`
    - `PORT`: `10000`
 5. Click **Create Web Service**. Wait for the build to finish. Copy your backend service URL (e.g. `https://gpa-feedback-server.onrender.com`).
@@ -132,16 +132,11 @@ GPA Feedback Module/
 
 ---
 
-## 🔑 Class Teacher Login Credentials
+## 🔑 Authentication & Access Control
 
-| Role / Semester | Username | Password |
-|---|---|---|
-| Class Teacher (Sem 1) | `semester_one` | `semester@one` |
-| Class Teacher (Sem 2) | `semester_two` | `semester@two` |
-| Class Teacher (Sem 3) | `semester_three` | `semester@three` |
-| Class Teacher (Sem 4) | `semester_four` | `semester@four` |
-| Class Teacher (Sem 5) | `semester_five` | `semester@five` |
-| Class Teacher (Sem 6) | `semester_six` | `semester@six` |
+Class Teacher and HOD accounts are managed securely:
+- **Format**: Structured by department and semester (e.g., `computer@first`, `civil@second`, `mechanical@third`, `automobile@first`).
+- **Security**: Passwords are encrypted with `bcrypt` (10 rounds). Passwords must be configured securely per institution deployment and should never be committed to public repositories.
 
 ---
 

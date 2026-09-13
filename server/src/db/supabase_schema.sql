@@ -158,8 +158,7 @@ INSERT INTO academic_years (year_label, is_current) VALUES
   ('2026-27', FALSE)
 ON CONFLICT (year_label) DO NOTHING;
 
--- 3. Class Teacher Accounts (semester_one through semester_six)
--- Passwords: semester@one, semester@two, semester@three, semester@four, semester@five, semester@six
+-- 3. Class Teacher Initial Placeholder Accounts (Update passwords after initial setup)
 INSERT INTO users (username, password_hash, name, department_id, semester)
 SELECT 'semester_one', '$2a$10$EHg1klG4SWV/tDRGsgd/xeEIZbJyZTrgVPw0QFijfLGDSfQXFTVJW', 'Class Teacher - Sem 1', id, 1 FROM departments WHERE code = 'CO'
 ON CONFLICT (username) DO NOTHING;
